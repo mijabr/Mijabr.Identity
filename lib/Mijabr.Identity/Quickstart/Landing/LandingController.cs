@@ -14,13 +14,13 @@ namespace IdentityServer4.Quickstart.UI
 {
     [SecurityHeaders]
     [AllowAnonymous]
-    public class HomeController : Controller
+    public class LandingController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger _logger;
 
-        public HomeController(IIdentityServerInteractionService interaction, IWebHostEnvironment environment, ILogger<HomeController> logger)
+        public LandingController(IIdentityServerInteractionService interaction, IWebHostEnvironment environment, ILogger<LandingController> logger)
         {
             _interaction = interaction;
             _environment = environment;

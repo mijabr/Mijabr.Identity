@@ -95,13 +95,21 @@ namespace Mijabr.Identity
 
                     RedirectUris =
                     {
+                        "http://localhost/home/index.html",
                         "http://home/home/index.html",
-                        "http://home/home/callback.html",
+                        "http://localhost/home/redirect",
+                        "http://home/home/redirect",
                         "http://home/home/silent.html",
                         "http://home/home/popup.html",
                     },
 
-                    PostLogoutRedirectUris = { "http://home/home/index.html" },
+                    PostLogoutRedirectUris =
+                    {
+                        "http://localhost/home",
+                        "http://home/home",
+                        "http://localhost/home/index.html",
+                        "http://home/home/index.html"
+                    },
                     AllowedCorsOrigins = { "http://home" },
 
                     AllowedScopes = { "openid", "profile", "home" }

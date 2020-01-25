@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProxyKit;
 
 namespace Mijabr.Identity
 {
@@ -25,6 +26,8 @@ namespace Mijabr.Identity
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddProxy();
+
             services.AddControllersWithViews();
 
             // configures IIS out-of-proc settings (see https://github.com/aspnet/AspNetCore/issues/14882)
@@ -84,14 +87,38 @@ namespace Mijabr.Identity
             }
 
             app.UseStaticFiles();
-
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
                 //endpoints.MapControllerRoute("routes", "identity/{controller=Home}/{action=Index}/{id?}");
+            });
+
+            app.MapWhen(context => context.Request.Path.Equals("/"), home =>
+            {
+                home.RunProxy(context => context
+                    .ForwardTo("http://home/home/")
+                    .AddXForwardedHeaders()
+                    .Send());
+            });
+
+            app.Map("/home", home =>
+            {
+                home.RunProxy(context => context
+                    .ForwardTo("http://home/home/")
+                    .AddXForwardedHeaders()
+                    .Send());
+            });
+
+            app.Map("/scrabble", home =>
+            {
+                home.RunProxy(context => context
+                    .ForwardTo("http://scrabble/scrabble/")
+                    .AddXForwardedHeaders()
+                    .Send());
             });
         }
     }
