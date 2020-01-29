@@ -92,23 +92,18 @@ namespace Mijabr.Identity
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
                     RequireClientSecret = false,
+                    RequireConsent = false,
 
                     RedirectUris =
                     {
-                        "http://localhost/home/index.html",
-                        "http://home/home/index.html",
                         "http://localhost/home/redirect",
-                        "http://home/home/redirect",
-                        "http://home/home/silent.html",
-                        "http://home/home/popup.html",
+                        "http://mijabr.ddns.net/home/redirect"
                     },
 
                     PostLogoutRedirectUris =
                     {
                         "http://localhost/home",
-                        "http://home/home",
-                        "http://localhost/home/index.html",
-                        "http://home/home/index.html"
+                        "http://mijabr.ddns.net/home",
                     },
                     AllowedCorsOrigins = { "http://home" },
 
