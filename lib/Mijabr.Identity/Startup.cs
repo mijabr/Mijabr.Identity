@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.AspNetCore.Builder;
@@ -26,9 +27,23 @@ namespace Mijabr.Identity
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var host = System.Environment.GetEnvironmentVariable("host") ?? "localtest.me";
+            Console.WriteLine($"Using host {host}");
+
             services.AddProxy();
 
             services.AddControllersWithViews();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CORS",
+                    b => b
+                        .SetIsOriginAllowed(origin => origin.EndsWith(host))
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .AllowAnyHeader()
+                        .Build());
+            });
 
             // configures IIS out-of-proc settings (see https://github.com/aspnet/AspNetCore/issues/14882)
             services.Configure<IISOptions>(iis =>
@@ -44,8 +59,9 @@ namespace Mijabr.Identity
                 iis.AutomaticAuthentication = false;
             });
 
-            var builder = services.AddIdentityServer(options =>
+            var builder = services.AddIdentityServer(options => 
             {
+                options.IssuerUri = "http://identity";
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
@@ -86,16 +102,25 @@ namespace Mijabr.Identity
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("CORS");
+
             app.UseStaticFiles();
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapDefaultControllerRoute();
-                //endpoints.MapControllerRoute("routes", "identity/{controller=Home}/{action=Index}/{id?}");
-            });
+            //app.Use(async (context, next) =>
+            //{
+            //    if (context.Request.Path.Value.Contains("/api/"))
+            //    {
+            //        var auth = context.RequestServices.GetService<IAuthorizationService>();
+            //        auth.AuthorizeAsync(context.User,)
+            //    }
+
+            //    await next();
+            //});
+
+            app.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute());
 
             app.MapWhen(context => context.Request.Path.Equals("/"), home =>
             {
